@@ -1,0 +1,47 @@
+{
+  "name": "eth-hackathon-adhd-focus",
+  "version": "1.0.0",
+  "description": "Web3 ADHD专注力训练DApp - Learn to Earn & Focus to Earn",
+  "main": "index.html",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js",
+    "deploy:basesepolia": "hardhat run scripts/deploy.js --network baseSepolia",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "node": "hardhat node"
+  },
+  "keywords": [
+    "web3",
+    "ethereum",
+    "adhd",
+    "focus",
+    "nft",
+    "defi",
+    "education"
+  ],
+  "author": "ETH Hackathon Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
+    "@nomicfoundation/hardhat-ethers": "^4.0.2",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.1",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^3.0.3",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/chai": "^5.2.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.8.1",
+    "chai": "^6.2.0",
+    "ethers": "^6.15.0",
+    "hardhat": "^2.22.0",
+    "hardhat-gas-reporter": "^2.3.0",
+    "solidity-coverage": "^0.8.16",
+    "typechain": "^8.3.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.1"
+  }
+}

@@ -12,6 +12,7 @@ class ADHDFocusApp {
         this.tokens = parseInt(localStorage.getItem('adhd_tokens') || '0');
         this.lessons = JSON.parse(localStorage.getItem('adhd_lessons') || '{}');
         this.pet = JSON.parse(localStorage.getItem('adhd_pet') || '{"name":"小咪","level":1,"hunger":100,"happiness":100,"health":100,"lastFed":null,"lastPlayed":null,"status":"healthy"}');
+        this.petLogs = JSON.parse(localStorage.getItem('adhd_pet_logs') || '[]');
         
         this.init();
     }
@@ -22,6 +23,97 @@ class ADHDFocusApp {
         this.updateUI();
         this.loadProgress();
         this.setupNotifications();
+        
+        console.log('✅ ADHD Focus App 初始化完成');
+        console.log('- 已加载任务:', this.tasks.length);
+        console.log('- 代币余额:', this.tokens);
+        console.log('- 宠物状态:', this.pet);
+        
+        // 检查是否首次使用
+        this.checkFirstTime();
+    }
+    
+    checkFirstTime() {
+        const hasVisited = localStorage.getItem('adhd_has_visited');
+        if (!hasVisited) {
+            // 延迟显示引导，确保页面完全加载
+            setTimeout(() => this.showOnboarding(), 500);
+        }
+    }
+    
+    showOnboarding() {
+        const overlay = document.getElementById('onboardingOverlay');
+        if (!overlay) return;
+        
+        this.onboardingStep = 0;
+        this.onboardingSteps = [
+            {
+                title: '🍅 番茄计时器',
+                content: '使用番茄工作法提升专注力。设置25分钟专注时间，休息5分钟，让工作更高效！'
+            },
+            {
+                title: '📋 任务管理',
+                content: '轻松管理你的待办事项。添加任务、设置优先级、追踪完成进度。'
+            },
+            {
+                title: '🎮 专注训练',
+                content: '通过有趣的游戏和冥想练习提升专注力和注意力。'
+            },
+            {
+                title: '📚 区块链学习',
+                content: '学习区块链知识，完成课程获得代币奖励，用代币喂养你的虚拟宠物！'
+            },
+            {
+                title: '🐱 虚拟宠物',
+                content: '用学习获得的代币照顾你的宠物，它会陪伴你成长！'
+            }
+        ];
+        
+        this.renderOnboardingStep();
+        overlay.style.display = 'flex';
+        
+        // 设置按钮事件
+        document.getElementById('nextOnboarding').onclick = () => this.nextOnboardingStep();
+        document.getElementById('skipOnboarding').onclick = () => this.skipOnboarding();
+    }
+    
+    renderOnboardingStep() {
+        const step = this.onboardingSteps[this.onboardingStep];
+        const content = document.getElementById('onboardingContent');
+        const dots = document.getElementById('onboardingDots');
+        const nextBtn = document.getElementById('nextOnboarding');
+        
+        content.innerHTML = `
+            <div class="onboarding-step">
+                <h3>${step.title}</h3>
+                <p>${step.content}</p>
+            </div>
+        `;
+        
+        dots.innerHTML = this.onboardingSteps.map((_, i) => 
+            `<span class="dot ${i === this.onboardingStep ? 'active' : ''}"></span>`
+        ).join('');
+        
+        nextBtn.textContent = this.onboardingStep === this.onboardingSteps.length - 1 ? '开始使用' : '下一步';
+    }
+    
+    nextOnboardingStep() {
+        if (this.onboardingStep < this.onboardingSteps.length - 1) {
+            this.onboardingStep++;
+            this.renderOnboardingStep();
+        } else {
+            this.completeOnboarding();
+        }
+    }
+    
+    skipOnboarding() {
+        this.completeOnboarding();
+    }
+    
+    completeOnboarding() {
+        document.getElementById('onboardingOverlay').style.display = 'none';
+        localStorage.setItem('adhd_has_visited', 'true');
+        this.showNotification('欢迎使用 PubFi: ADHD！开始你的专注之旅吧！', 'success');
     }
 
     // 事件监听器设置
@@ -47,6 +139,24 @@ class ADHDFocusApp {
 
         document.getElementById('closeSettingsBtn').addEventListener('click', () => {
             this.toggleSettings();
+        });
+        
+        // 数据管理按钮
+        document.getElementById('exportDataBtn')?.addEventListener('click', () => {
+            this.exportData();
+        });
+        
+        document.getElementById('importDataBtn')?.addEventListener('click', () => {
+            document.getElementById('importFileInput').click();
+        });
+        
+        document.getElementById('importFileInput')?.addEventListener('change', (e) => {
+            this.importData(e.target.files[0]);
+            e.target.value = ''; // 重置文件输入
+        });
+        
+        document.getElementById('clearDataBtn')?.addEventListener('click', () => {
+            this.clearAllData();
         });
 
         // 番茄计时器
@@ -142,22 +252,21 @@ class ADHDFocusApp {
     }
 
     updateTimerDisplay() {
-        const minutes = document.getElementById('timerMinutes');
-        const seconds = document.getElementById('timerSeconds');
+        const timerTime = document.getElementById('timerTime');
         const mode = document.getElementById('timerMode');
         
         if (this.timer) {
             const time = this.timer.getTimeRemaining();
-            minutes.textContent = Math.floor(time / 60).toString().padStart(2, '0');
-            seconds.textContent = (time % 60).toString().padStart(2, '0');
+            const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+            const seconds = (time % 60).toString().padStart(2, '0');
+            timerTime.textContent = `${minutes}:${seconds}`;
             mode.textContent = this.timer.getCurrentMode();
             
             // 更新进度圆环
             this.updateTimerProgress();
         } else {
             const focusTime = parseInt(document.getElementById('focusTime').value);
-            minutes.textContent = focusTime.toString().padStart(2, '0');
-            seconds.textContent = '00';
+            timerTime.textContent = `${focusTime.toString().padStart(2, '0')}:00`;
             mode.textContent = '专注时间';
         }
     }
@@ -547,34 +656,113 @@ class ADHDFocusApp {
             });
         });
 
-        document.getElementById('closeMeditationBtn').addEventListener('click', () => {
+        document.getElementById('closeMeditationBtn')?.addEventListener('click', () => {
             this.closeMeditation();
+        });
+        
+        document.getElementById('playPauseBtn')?.addEventListener('click', () => {
+            // 切换播放/暂停状态
+            const btn = document.getElementById('playPauseBtn');
+            if (this.meditationInterval) {
+                clearInterval(this.meditationInterval);
+                this.meditationInterval = null;
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                this.startMeditationTimer();
+                btn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
         });
     }
 
     startMeditation(type) {
         const player = document.getElementById('meditationPlayer');
         const title = document.getElementById('meditationTitle');
+        const visual = document.getElementById('meditationVisual');
         
-        const titles = {
+        const meditationTitles = {
             'mindfulness': '正念冥想',
             'breathing': '呼吸冥想',
             'body-scan': '身体扫描'
         };
         
-        title.textContent = titles[type];
+        title.textContent = meditationTitles[type];
+        visual.innerHTML = this.getMeditationVisual(type);
         player.style.display = 'block';
         
-        this.initMeditation(type);
+        this.currentMeditation = {
+            type: type,
+            startTime: Date.now(),
+            duration: 300 // 5分钟默认
+        };
+        
+        this.startMeditationTimer();
     }
 
-    initMeditation(type) {
-        // 冥想功能实现
-        this.showNotification('冥想练习开始', 'info');
+    getMeditationVisual(type) {
+        return `
+            <div class="meditation-breathing-circle">
+                <div class="circle-inner"></div>
+            </div>
+            <p class="meditation-instruction">放松身心，专注呼吸</p>
+        `;
+    }
+
+    startMeditationTimer() {
+        if (this.meditationInterval) {
+            clearInterval(this.meditationInterval);
+        }
+        
+        let elapsed = 0;
+        const duration = this.currentMeditation.duration;
+        
+        this.meditationInterval = setInterval(() => {
+            elapsed++;
+            const remaining = duration - elapsed;
+            
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+            
+            const currentTimeEl = document.getElementById('currentTime');
+            if (currentTimeEl) {
+                currentTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            const progressEl = document.getElementById('meditationProgress');
+            if (progressEl) {
+                const progress = (elapsed / duration) * 100;
+                progressEl.style.width = progress + '%';
+            }
+            
+            if (remaining <= 0) {
+                clearInterval(this.meditationInterval);
+                this.completeMeditation();
+            }
+        }, 1000);
+        
+        const totalTimeEl = document.getElementById('totalTime');
+        if (totalTimeEl) {
+            totalTimeEl.textContent = `${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}`;
+        }
+    }
+
+    completeMeditation() {
+        this.showNotification('冥想练习完成！', 'success');
+        
+        if (!this.progress.meditation) this.progress.meditation = [];
+        this.progress.meditation.push({
+            type: this.currentMeditation.type,
+            duration: this.currentMeditation.duration,
+            date: new Date().toISOString()
+        });
+        this.saveProgress();
     }
 
     closeMeditation() {
         document.getElementById('meditationPlayer').style.display = 'none';
+        if (this.meditationInterval) {
+            clearInterval(this.meditationInterval);
+        }
+        this.currentMeditation = null;
     }
 
     // 设置功能
@@ -698,6 +886,22 @@ class ADHDFocusApp {
     saveProgress() {
         localStorage.setItem('adhd_progress', JSON.stringify(this.progress));
     }
+    
+    recordFocusTime(minutes) {
+        // 记录今天的专注时间
+        const today = new Date().toISOString().split('T')[0];
+        const focusHistory = JSON.parse(localStorage.getItem('adhd_focus_history') || '{}');
+        
+        focusHistory[today] = (focusHistory[today] || 0) + minutes;
+        localStorage.setItem('adhd_focus_history', JSON.stringify(focusHistory));
+        
+        // 更新today FocusTime
+        this.progress.todayFocusTime = focusHistory[today];
+        this.saveProgress();
+        
+        // 更新显示
+        this.updateProgressStats();
+    }
 
     loadSettings() {
         const theme = this.settings.theme || 'light';
@@ -724,19 +928,23 @@ class ADHDFocusApp {
     updateProgressStats() {
         // 更新今日专注时间
         const todayFocusTime = this.progress.todayFocusTime || 0;
-        document.getElementById('todayFocusTime').textContent = todayFocusTime + '分钟';
+        const todayFocusEl = document.getElementById('todayFocusTime');
+        if (todayFocusEl) todayFocusEl.textContent = todayFocusTime + '分钟';
         
         // 更新连续天数
         const currentStreak = this.progress.currentStreak || 0;
-        document.getElementById('currentStreakOverview').textContent = currentStreak + '天';
+        const streakEl = document.getElementById('currentStreakOverview');
+        if (streakEl) streakEl.textContent = currentStreak + '天';
         
         // 更新完成任务数
         const completedTasks = this.tasks.filter(t => t.completed).length;
-        document.getElementById('completedTasksOverview').textContent = completedTasks + '个';
+        const completedTasksEl = document.getElementById('completedTasksOverview');
+        if (completedTasksEl) completedTasksEl.textContent = completedTasks + '个';
         
         // 更新专注力评分
         const focusScore = this.calculateFocusScore();
-        document.getElementById('focusScore').textContent = focusScore + '分';
+        const focusScoreEl = document.getElementById('focusScore');
+        if (focusScoreEl) focusScoreEl.textContent = focusScore + '分';
     }
 
     calculateFocusScore() {
@@ -760,14 +968,19 @@ class ADHDFocusApp {
     }
 
     renderFocusTimeChart() {
-        const ctx = document.getElementById('focusTimeChart').getContext('2d');
-        new Chart(ctx, {
+        const ctx = document.getElementById('focusTimeChart');
+        if (!ctx) return;
+        
+        // 获取最近7天的专注时间数据
+        const last7Days = this.getLast7DaysFocusData();
+        
+        new Chart(ctx.getContext('2d'), {
             type: 'line',
             data: {
-                labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                labels: last7Days.labels,
                 datasets: [{
                     label: '专注时间(分钟)',
-                    data: [25, 30, 20, 35, 40, 15, 30],
+                    data: last7Days.data,
                     borderColor: '#4A90E2',
                     backgroundColor: 'rgba(74, 144, 226, 0.1)',
                     tension: 0.4
@@ -779,9 +992,33 @@ class ADHDFocusApp {
                     legend: {
                         display: false
                     }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
         });
+    }
+    
+    getLast7DaysFocusData() {
+        const focusHistory = JSON.parse(localStorage.getItem('adhd_focus_history') || '{}');
+        const labels = [];
+        const data = [];
+        const today = new Date();
+        
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const dateKey = date.toISOString().split('T')[0];
+            const dayName = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
+            
+            labels.push(dayName);
+            data.push(focusHistory[dateKey] || 0);
+        }
+        
+        return { labels, data };
     }
 
     renderTaskCompletionChart() {
@@ -810,14 +1047,19 @@ class ADHDFocusApp {
     }
 
     renderGameProgressChart() {
-        const ctx = document.getElementById('gameProgressChart').getContext('2d');
-        new Chart(ctx, {
+        const ctx = document.getElementById('gameProgressChart');
+        if (!ctx) return;
+        
+        // 获取真实游戏数据
+        const gameData = this.getGameProgressData();
+        
+        new Chart(ctx.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: ['呼吸练习', '专注训练', '记忆训练', '反应训练'],
                 datasets: [{
                     label: '游戏次数',
-                    data: [5, 8, 3, 6],
+                    data: gameData,
                     backgroundColor: '#4A90E2'
                 }]
             },
@@ -827,20 +1069,43 @@ class ADHDFocusApp {
                     legend: {
                         display: false
                     }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
                 }
             }
         });
     }
+    
+    getGameProgressData() {
+        const games = this.progress.games || {};
+        return [
+            (games.breathing || []).length,
+            (games.focus || []).length,
+            (games.memory || []).length,
+            (games.reaction || []).length
+        ];
+    }
 
     renderMeditationChart() {
-        const ctx = document.getElementById('meditationChart').getContext('2d');
-        new Chart(ctx, {
+        const ctx = document.getElementById('meditationChart');
+        if (!ctx) return;
+        
+        // 获取最近7天的冥想数据
+        const meditationData = this.getLast7DaysMeditationData();
+        
+        new Chart(ctx.getContext('2d'), {
             type: 'line',
             data: {
-                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                labels: meditationData.labels,
                 datasets: [{
                     label: '冥想次数',
-                    data: [8, 12, 6, 15, 10, 18],
+                    data: meditationData.data,
                     borderColor: '#50C878',
                     backgroundColor: 'rgba(80, 200, 120, 0.1)',
                     tension: 0.4
@@ -852,9 +1117,37 @@ class ADHDFocusApp {
                     legend: {
                         display: false
                     }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
                 }
             }
         });
+    }
+    
+    getLast7DaysMeditationData() {
+        const meditations = this.progress.meditation || [];
+        const labels = [];
+        const data = [];
+        const today = new Date();
+        
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const dateKey = date.toISOString().split('T')[0];
+            const dayName = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
+            
+            labels.push(dayName);
+            const count = meditations.filter(m => m.date.startsWith(dateKey)).length;
+            data.push(count);
+        }
+        
+        return { labels, data };
     }
 
     updateUI() {
@@ -898,7 +1191,7 @@ class ADHDFocusApp {
         const lessonData = this.getLessonData(lessonId);
         if (!lessonData) return;
 
-        const interface = document.getElementById('learningInterface');
+        const learningInterface = document.getElementById('learningInterface');
         const title = document.getElementById('lessonTitle');
         const content = document.getElementById('lessonContent');
 
@@ -913,7 +1206,7 @@ class ADHDFocusApp {
         };
 
         this.updateLessonNavigation();
-        interface.style.display = 'block';
+        learningInterface.style.display = 'block';
     }
 
     closeLesson() {
@@ -1173,10 +1466,17 @@ class ADHDFocusApp {
         const totalTokensEarned = Object.values(this.lessons).reduce((sum, lesson) => sum + lesson.tokensEarned, 0);
         const progress = (completedLessons / 6) * 100;
 
-        document.getElementById('completedLessons').textContent = completedLessons;
-        document.getElementById('totalTokensEarned').textContent = totalTokensEarned;
-        document.getElementById('learningProgressFill').style.width = progress + '%';
-        document.getElementById('learningProgressText').textContent = Math.round(progress) + '%';
+        const completedEl = document.getElementById('completedLessons');
+        if (completedEl) completedEl.textContent = completedLessons;
+        
+        const totalTokensEl = document.getElementById('totalTokensEarned');
+        if (totalTokensEl) totalTokensEl.textContent = totalTokensEarned;
+        
+        const progressFillEl = document.getElementById('learningProgressFill');
+        if (progressFillEl) progressFillEl.style.width = progress + '%';
+        
+        const progressTextEl = document.getElementById('learningProgressText');
+        if (progressTextEl) progressTextEl.textContent = Math.round(progress) + '%';
     }
 
     renderLessons() {
@@ -1192,7 +1492,10 @@ class ADHDFocusApp {
     }
 
     updateTokenDisplay() {
-        document.getElementById('tokenAmount').textContent = this.tokens;
+        const tokenElement = document.getElementById('tokenAmount');
+        if (tokenElement) {
+            tokenElement.textContent = this.tokens;
+        }
     }
 
     // 虚拟宠物功能
@@ -1305,27 +1608,42 @@ class ADHDFocusApp {
     updatePetDisplay() {
         // 更新宠物头像状态
         const avatar = document.getElementById('petAvatar');
-        avatar.className = 'pet-avatar';
-        
-        if (this.pet.hunger < 30) {
-            avatar.classList.add('hungry');
-        }
-        if (this.pet.health < 20) {
-            avatar.classList.add('sick');
+        if (avatar) {
+            avatar.className = 'pet-avatar';
+            
+            if (this.pet.hunger < 30) {
+                avatar.classList.add('hungry');
+            }
+            if (this.pet.health < 20) {
+                avatar.classList.add('sick');
+            }
         }
 
         // 更新宠物信息
-        document.getElementById('petName').textContent = this.pet.name;
-        document.getElementById('petLevel').textContent = this.pet.level;
+        const petNameEl = document.getElementById('petName');
+        if (petNameEl) petNameEl.textContent = this.pet.name;
+        
+        const petLevelEl = document.getElementById('petLevel');
+        if (petLevelEl) petLevelEl.textContent = this.pet.level;
 
         // 更新状态条
-        document.getElementById('hungerBar').style.width = this.pet.hunger + '%';
-        document.getElementById('happinessBar').style.width = this.pet.happiness + '%';
-        document.getElementById('healthBar').style.width = this.pet.health + '%';
+        const hungerBar = document.getElementById('hungerBar');
+        if (hungerBar) hungerBar.style.width = this.pet.hunger + '%';
+        
+        const happinessBar = document.getElementById('happinessBar');
+        if (happinessBar) happinessBar.style.width = this.pet.happiness + '%';
+        
+        const healthBar = document.getElementById('healthBar');
+        if (healthBar) healthBar.style.width = this.pet.health + '%';
 
-        document.getElementById('hungerValue').textContent = this.pet.hunger + '%';
-        document.getElementById('happinessValue').textContent = this.pet.happiness + '%';
-        document.getElementById('healthValue').textContent = this.pet.health + '%';
+        const hungerValue = document.getElementById('hungerValue');
+        if (hungerValue) hungerValue.textContent = this.pet.hunger + '%';
+        
+        const happinessValue = document.getElementById('happinessValue');
+        if (happinessValue) happinessValue.textContent = this.pet.happiness + '%';
+        
+        const healthValue = document.getElementById('healthValue');
+        if (healthValue) healthValue.textContent = this.pet.health + '%';
 
         // 更新按钮状态
         this.updatePetButtons();
@@ -1409,28 +1727,35 @@ class ADHDFocusApp {
     }
 
     addPetLog(type, message) {
-        const logContainer = document.getElementById('petLog');
-        const logEntry = document.createElement('div');
-        logEntry.className = `log-entry ${type}`;
+        if (!this.petLogs) this.petLogs = [];
         
-        const time = new Date().toLocaleTimeString();
-        logEntry.innerHTML = `<span class="log-time">${time}</span>${message}`;
+        this.petLogs.push({
+            type: type,
+            message: message,
+            time: new Date().toISOString()
+        });
         
-        logContainer.insertBefore(logEntry, logContainer.firstChild);
-        
-        // 限制日志数量
-        while (logContainer.children.length > 20) {
-            logContainer.removeChild(logContainer.lastChild);
+        // 只保留最近50条
+        if (this.petLogs.length > 50) {
+            this.petLogs = this.petLogs.slice(-50);
         }
+        
+        this.renderPetLog();
+        localStorage.setItem('adhd_pet_logs', JSON.stringify(this.petLogs));
     }
 
     renderPetLog() {
         const logContainer = document.getElementById('petLog');
-        logContainer.innerHTML = '';
+        if (!logContainer) return;
         
-        // 添加一些初始日志
-        this.addPetLog('play', '欢迎来到虚拟宠物世界！');
-        this.addPetLog('feed', '宠物需要你的照顾，学习获得代币来喂养它吧！');
+        if (!this.petLogs) this.petLogs = [];
+        
+        logContainer.innerHTML = this.petLogs.slice(-10).reverse().map(log => `
+            <div class="log-entry ${log.type}">
+                <span class="log-time">${new Date(log.time).toLocaleTimeString()}</span>
+                <span class="log-message">${log.message}</span>
+            </div>
+        `).join('');
     }
 
     // 数据持久化更新
@@ -1438,6 +1763,119 @@ class ADHDFocusApp {
         localStorage.setItem('adhd_tokens', this.tokens.toString());
         localStorage.setItem('adhd_lessons', JSON.stringify(this.lessons));
         localStorage.setItem('adhd_pet', JSON.stringify(this.pet));
+    }
+    
+    // 导出所有数据
+    exportData() {
+        const exportData = {
+            version: '1.0',
+            exportDate: new Date().toISOString(),
+            data: {
+                tasks: this.tasks,
+                tokens: this.tokens,
+                lessons: this.lessons,
+                pet: this.pet,
+                petLogs: this.petLogs,
+                progress: this.progress,
+                settings: this.settings,
+                focusHistory: JSON.parse(localStorage.getItem('adhd_focus_history') || '{}'),
+                hasVisited: localStorage.getItem('adhd_has_visited')
+            }
+        };
+        
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `pubfi-adhd-backup-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        this.showNotification('数据导出成功！', 'success');
+    }
+    
+    // 导入数据
+    async importData(file) {
+        if (!file) {
+            this.showNotification('请选择要导入的文件', 'warning');
+            return;
+        }
+        
+        try {
+            const text = await file.text();
+            const importData = JSON.parse(text);
+            
+            if (!importData.version || !importData.data) {
+                throw new Error('无效的备份文件格式');
+            }
+            
+            // 确认导入
+            if (!confirm('导入数据将覆盖当前所有数据，确定要继续吗？')) {
+                return;
+            }
+            
+            // 导入数据
+            this.tasks = importData.data.tasks || [];
+            this.tokens = importData.data.tokens || 100;
+            this.lessons = importData.data.lessons || this.lessons;
+            this.pet = importData.data.pet || this.pet;
+            this.petLogs = importData.data.petLogs || [];
+            this.progress = importData.data.progress || this.progress;
+            this.settings = { ...this.settings, ...importData.data.settings };
+            
+            // 保存到localStorage
+            localStorage.setItem('adhd_tasks', JSON.stringify(this.tasks));
+            localStorage.setItem('adhd_tokens', this.tokens.toString());
+            localStorage.setItem('adhd_lessons', JSON.stringify(this.lessons));
+            localStorage.setItem('adhd_pet', JSON.stringify(this.pet));
+            localStorage.setItem('adhd_pet_logs', JSON.stringify(this.petLogs));
+            localStorage.setItem('adhd_progress', JSON.stringify(this.progress));
+            localStorage.setItem('adhd_settings', JSON.stringify(this.settings));
+            
+            if (importData.data.focusHistory) {
+                localStorage.setItem('adhd_focus_history', JSON.stringify(importData.data.focusHistory));
+            }
+            
+            if (importData.data.hasVisited) {
+                localStorage.setItem('adhd_has_visited', importData.data.hasVisited);
+            }
+            
+            this.showNotification('数据导入成功！页面即将刷新...', 'success');
+            setTimeout(() => location.reload(), 1500);
+            
+        } catch (error) {
+            console.error('导入失败:', error);
+            this.showNotification('数据导入失败：' + error.message, 'error');
+        }
+    }
+    
+    // 清空所有数据
+    clearAllData() {
+        if (!confirm('确定要清空所有数据吗？此操作不可恢复！\n\n建议先导出数据进行备份。')) {
+            return;
+        }
+        
+        if (!confirm('再次确认：真的要删除所有数据吗？')) {
+            return;
+        }
+        
+        // 清空localStorage
+        const keysToRemove = [
+            'adhd_tasks',
+            'adhd_tokens',
+            'adhd_lessons',
+            'adhd_pet',
+            'adhd_pet_logs',
+            'adhd_progress',
+            'adhd_focus_history',
+            'adhd_has_visited'
+            // 不删除settings，保留用户的设置偏好
+        ];
+        
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        this.showNotification('所有数据已清空！页面即将刷新...', 'success');
+        setTimeout(() => location.reload(), 1500);
     }
 }
 
@@ -1498,6 +1936,10 @@ class PomodoroTimer {
         
         if (this.mode === 'focus') {
             this.completedPomodoros++;
+            
+            // 记录专注时间到历史
+            this.app.recordFocusTime(this.focusTime / 60);
+            
             this.app.showNotification('专注时间结束！该休息了', 'success');
             
             // 每4个番茄后长休息

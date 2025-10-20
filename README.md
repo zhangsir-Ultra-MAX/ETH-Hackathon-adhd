@@ -1,6 +1,8 @@
-# ADHD专注力训练助手
+# PubFi: ADHD - 专注力训练助手
 
 一个专为ADHD（注意力缺陷多动障碍）用户设计的专注力训练和任务管理应用程序。
+
+> **PubFi: ADHD** - Public Finance for ADHD，让每个ADHD患者都能通过专注力训练获得成长和奖励。
 
 ## 功能特性
 
