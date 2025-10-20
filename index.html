@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADHD专注力训练助手</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-brain"></i>
+                <span>专注力训练助手</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#timer" class="nav-link active" data-section="timer">
+                    <i class="fas fa-clock"></i>
+                    <span>番茄计时器</span>
+                </a>
+                <a href="#tasks" class="nav-link" data-section="tasks">
+                    <i class="fas fa-tasks"></i>
+                    <span>任务管理</span>
+                </a>
+                <a href="#games" class="nav-link" data-section="games">
+                    <i class="fas fa-gamepad"></i>
+                    <span>专注游戏</span>
+                </a>
+                <a href="#meditation" class="nav-link" data-section="meditation">
+                    <i class="fas fa-leaf"></i>
+                    <span>冥想练习</span>
+                </a>
+                <a href="#blockchain" class="nav-link" data-section="blockchain">
+                    <i class="fas fa-link"></i>
+                    <span>区块链学习</span>
+                </a>
+                <a href="#pet" class="nav-link" data-section="pet">
+                    <i class="fas fa-paw"></i>
+                    <span>虚拟宠物</span>
+                </a>
+                <a href="#progress" class="nav-link" data-section="progress">
+                    <i class="fas fa-chart-line"></i>
+                    <span>进度报告</span>
+                </a>
+            </div>
+            <div class="nav-settings">
+                <button class="settings-btn" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 番茄计时器部分 -->
+        <section id="timer" class="section active">
+            <div class="container">
+                <div class="timer-container">
+                    <div class="timer-header">
+                        <h1>番茄工作法计时器</h1>
+                        <p>专注25分钟，休息5分钟，让工作更高效</p>
+                    </div>
+                    
+                    <div class="timer-display">
+                        <div class="timer-circle">
+                            <svg class="timer-svg" viewBox="0 0 200 200">
+                                <circle class="timer-bg" cx="100" cy="100" r="90"></circle>
+                                <circle class="timer-progress" cx="100" cy="100" r="90"></circle>
+                            </svg>
+                            <div class="timer-text">
+                                <div class="timer-time" id="timerTime">25:00</div>
+                                <div class="timer-mode" id="timerMode">专注时间</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timer-controls">
+                        <button class="timer-btn start-btn" id="startBtn">
+                            <i class="fas fa-play"></i>
+                            <span>开始</span>
+                        </button>
+                        <button class="timer-btn pause-btn" id="pauseBtn" disabled>
+                            <i class="fas fa-pause"></i>
+                            <span>暂停</span>
+                        </button>
+                        <button class="timer-btn reset-btn" id="resetBtn">
+                            <i class="fas fa-redo"></i>
+                            <span>重置</span>
+                        </button>
+                    </div>
+
+                    <div class="timer-settings">
+                        <div class="setting-group">
+                            <label for="focusTime">专注时间 (分钟)</label>
+                            <input type="number" id="focusTime" value="25" min="5" max="60">
+                        </div>
+                        <div class="setting-group">
+                            <label for="breakTime">休息时间 (分钟)</label>
+                            <input type="number" id="breakTime" value="5" min="1" max="30">
+                        </div>
+                        <div class="setting-group">
+                            <label for="longBreakTime">长休息时间 (分钟)</label>
+                            <input type="number" id="longBreakTime" value="15" min="5" max="60">
+                        </div>
+                    </div>
+
+                    <div class="timer-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="completedPomodoros">0</div>
+                            <div class="stat-label">完成的番茄</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalFocusTime">0</div>
+                            <div class="stat-label">总专注时间</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="currentStreak">0</div>
+                            <div class="stat-label">连续天数</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 任务管理部分 -->
+        <section id="tasks" class="section">
+            <div class="container">
+                <div class="tasks-container">
+                    <div class="tasks-header">
+                        <h1>任务管理</h1>
+                        <p>组织你的任务，提高工作效率</p>
+                    </div>
+
+                    <div class="task-input-section">
+                        <div class="task-input-group">
+                            <input type="text" id="taskInput" placeholder="添加新任务...">
+                            <select id="taskPriority">
+                                <option value="low">低优先级</option>
+                                <option value="medium" selected>中优先级</option>
+                                <option value="high">高优先级</option>
+                            </select>
+                            <select id="taskCategory">
+                                <option value="work">工作</option>
+                                <option value="study">学习</option>
+                                <option value="personal">个人</option>
+                                <option value="health">健康</option>
+                            </select>
+                            <button class="add-task-btn" id="addTaskBtn">
+                                <i class="fas fa-plus"></i>
+                                添加任务
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="task-filters">
+                        <button class="filter-btn active" data-filter="all">全部</button>
+                        <button class="filter-btn" data-filter="pending">待完成</button>
+                        <button class="filter-btn" data-filter="completed">已完成</button>
+                        <button class="filter-btn" data-filter="high">高优先级</button>
+                    </div>
+
+                    <div class="task-list" id="taskList">
+                        <!-- 任务项将动态添加到这里 -->
+                    </div>
+
+                    <div class="task-summary">
+                        <div class="summary-item">
+                            <span class="summary-label">总任务数:</span>
+                            <span class="summary-value" id="totalTasks">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">已完成:</span>
+                            <span class="summary-value" id="completedTasks">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">完成率:</span>
+                            <span class="summary-value" id="completionRate">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 专注游戏部分 -->
+        <section id="games" class="section">
+            <div class="container">
+                <div class="games-container">
+                    <div class="games-header">
+                        <h1>专注力训练游戏</h1>
+                        <p>通过有趣的游戏提升你的专注力</p>
+                    </div>
+
+                    <div class="games-grid">
+                        <div class="game-card" data-game="breathing">
+                            <div class="game-icon">
+                                <i class="fas fa-lungs"></i>
+                            </div>
+                            <h3>呼吸练习</h3>
+                            <p>通过控制呼吸节奏来提升专注力</p>
+                            <button class="play-btn" data-game="breathing">开始练习</button>
+                        </div>
+
+                        <div class="game-card" data-game="focus">
+                            <div class="game-icon">
+                                <i class="fas fa-crosshairs"></i>
+                            </div>
+                            <h3>专注点训练</h3>
+                            <p>训练你的视觉专注能力</p>
+                            <button class="play-btn" data-game="focus">开始训练</button>
+                        </div>
+
+                        <div class="game-card" data-game="memory">
+                            <div class="game-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h3>记忆训练</h3>
+                            <p>提升工作记忆和注意力</p>
+                            <button class="play-btn" data-game="memory">开始训练</button>
+                        </div>
+
+                        <div class="game-card" data-game="reaction">
+                            <div class="game-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3>反应训练</h3>
+                            <p>提高反应速度和专注度</p>
+                            <button class="play-btn" data-game="reaction">开始训练</button>
+                        </div>
+                    </div>
+
+                    <!-- 游戏区域 -->
+                    <div class="game-area" id="gameArea" style="display: none;">
+                        <div class="game-header">
+                            <h2 id="gameTitle">游戏标题</h2>
+                            <button class="close-game-btn" id="closeGameBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="game-content" id="gameContent">
+                            <!-- 游戏内容将动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 冥想练习部分 -->
+        <section id="meditation" class="section">
+            <div class="container">
+                <div class="meditation-container">
+                    <div class="meditation-header">
+                        <h1>冥想练习</h1>
+                        <p>通过冥想练习来平静心灵，提升专注力</p>
+                    </div>
+
+                    <div class="meditation-types">
+                        <div class="meditation-card" data-type="mindfulness">
+                            <div class="meditation-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <h3>正念冥想</h3>
+                            <p>专注于当下，观察内心</p>
+                            <div class="meditation-duration">
+                                <span>5分钟</span>
+                                <span>10分钟</span>
+                                <span>15分钟</span>
+                            </div>
+                            <button class="start-meditation-btn" data-type="mindfulness">开始冥想</button>
+                        </div>
+
+                        <div class="meditation-card" data-type="breathing">
+                            <div class="meditation-icon">
+                                <i class="fas fa-wind"></i>
+                            </div>
+                            <h3>呼吸冥想</h3>
+                            <p>通过呼吸练习来放松身心</p>
+                            <div class="meditation-duration">
+                                <span>3分钟</span>
+                                <span>7分钟</span>
+                                <span>12分钟</span>
+                            </div>
+                            <button class="start-meditation-btn" data-type="breathing">开始冥想</button>
+                        </div>
+
+                        <div class="meditation-card" data-type="body-scan">
+                            <div class="meditation-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3>身体扫描</h3>
+                            <p>放松身体各个部位</p>
+                            <div class="meditation-duration">
+                                <span>8分钟</span>
+                                <span>15分钟</span>
+                                <span>25分钟</span>
+                            </div>
+                            <button class="start-meditation-btn" data-type="body-scan">开始冥想</button>
+                        </div>
+                    </div>
+
+                    <!-- 冥想播放器 -->
+                    <div class="meditation-player" id="meditationPlayer" style="display: none;">
+                        <div class="player-header">
+                            <h2 id="meditationTitle">冥想标题</h2>
+                            <button class="close-meditation-btn" id="closeMeditationBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="player-content">
+                            <div class="meditation-visual" id="meditationVisual">
+                                <!-- 冥想可视化内容 -->
+                            </div>
+                            <div class="player-controls">
+                                <button class="player-btn" id="playPauseBtn">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="meditationProgress"></div>
+                                </div>
+                                <div class="time-display">
+                                    <span id="currentTime">0:00</span>
+                                    <span>/</span>
+                                    <span id="totalTime">0:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 区块链学习部分 -->
+        <section id="blockchain" class="section">
+            <div class="container">
+                <div class="blockchain-container">
+                    <div class="blockchain-header">
+                        <h1>区块链知识学习</h1>
+                        <p>学习区块链基础知识，获得代币奖励</p>
+                        <div class="token-display">
+                            <div class="token-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="token-info">
+                                <span class="token-label">我的代币</span>
+                                <span class="token-amount" id="tokenAmount">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="learning-progress">
+                        <div class="progress-header">
+                            <h3>学习进度</h3>
+                            <div class="progress-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="completedLessons">0</span>
+                                    <span class="stat-label">已完成课程</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="totalTokensEarned">0</span>
+                                    <span class="stat-label">获得代币</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="studyStreak">0</span>
+                                    <span class="stat-label">连续学习天数</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="learningProgressFill"></div>
+                            </div>
+                            <span class="progress-text" id="learningProgressText">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="lessons-grid">
+                        <div class="lesson-card" data-lesson="1">
+                            <div class="lesson-icon">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <h3>什么是区块链？</h3>
+                            <p>了解区块链的基本概念和原理</p>
+                            <div class="lesson-meta">
+                                <span class="lesson-duration">5分钟</span>
+                                <span class="lesson-reward">+10 代币</span>
+                            </div>
+                            <button class="start-lesson-btn" data-lesson="1">开始学习</button>
+                        </div>
+
+                        <div class="lesson-card" data-lesson="2">
+                            <div class="lesson-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>加密技术</h3>
+                            <p>学习哈希函数和数字签名</p>
+                            <div class="lesson-meta">
+                                <span class="lesson-duration">8分钟</span>
+                                <span class="lesson-reward">+15 代币</span>
+                            </div>
+                            <button class="start-lesson-btn" data-lesson="2">开始学习</button>
+                        </div>
+
+                        <div class="lesson-card" data-lesson="3">
+                            <div class="lesson-icon">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <h3>去中心化网络</h3>
+                            <p>理解P2P网络和共识机制</p>
+                            <div class="lesson-meta">
+                                <span class="lesson-duration">10分钟</span>
+                                <span class="lesson-reward">+20 代币</span>
+                            </div>
+                            <button class="start-lesson-btn" data-lesson="3">开始学习</button>
+                        </div>
+
+                        <div class="lesson-card" data-lesson="4">
+                            <div class="lesson-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <h3>加密货币</h3>
+                            <p>比特币、以太坊等主流数字货币</p>
+                            <div class="lesson-meta">
+                                <span class="lesson-duration">12分钟</span>
+                                <span class="lesson-reward">+25 代币</span>
+                            </div>
+                            <button class="start-lesson-btn" data-lesson="4">开始学习</button>
+                        </div>
+
+                        <div class="lesson-card" data-lesson="5">
+                            <div class="lesson-icon">
+                                <i class="fas fa-file-contract"></i>
+                            </div>
+                            <h3>智能合约</h3>
+                            <p>了解智能合约的工作原理</p>
+                            <div class="lesson-meta">
+                                <span class="lesson-duration">15分钟</span>
+                                <span class="lesson-reward">+30 代币</span>
+                            </div>
+                            <button class="start-lesson-btn" data-lesson="5">开始学习</button>
+                        </div>
+
+                        <div class="lesson-card" data-lesson="6">
+                            <div class="lesson-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>DeFi应用</h3>
+                            <p>去中心化金融的应用场景</p>
+                            <div class="lesson-meta">
+                                <span class="lesson-duration">18分钟</span>
+                                <span class="lesson-reward">+35 代币</span>
+                            </div>
+                            <button class="start-lesson-btn" data-lesson="6">开始学习</button>
+                        </div>
+                    </div>
+
+                    <!-- 学习界面 -->
+                    <div class="learning-interface" id="learningInterface" style="display: none;">
+                        <div class="learning-header">
+                            <h2 id="lessonTitle">课程标题</h2>
+                            <button class="close-lesson-btn" id="closeLessonBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="learning-content">
+                            <div class="lesson-content" id="lessonContent">
+                                <!-- 课程内容将动态加载 -->
+                            </div>
+                            <div class="learning-controls">
+                                <button class="prev-btn" id="prevBtn" disabled>
+                                    <i class="fas fa-chevron-left"></i>
+                                    上一页
+                                </button>
+                                <div class="page-indicator">
+                                    <span id="currentPage">1</span> / <span id="totalPages">1</span>
+                                </div>
+                                <button class="next-btn" id="nextBtn">
+                                    下一页
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 虚拟宠物部分 -->
+        <section id="pet" class="section">
+            <div class="container">
+                <div class="pet-container">
+                    <div class="pet-header">
+                        <h1>虚拟宠物</h1>
+                        <p>用学习获得的代币喂养你的宠物</p>
+                        <div class="pet-status">
+                            <div class="pet-info">
+                                <div class="pet-avatar" id="petAvatar">
+                                    <i class="fas fa-cat"></i>
+                                </div>
+                                <div class="pet-details">
+                                    <h3 id="petName">小咪</h3>
+                                    <div class="pet-level">
+                                        <span>等级: </span>
+                                        <span id="petLevel">1</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pet-stats">
+                                <div class="stat-bar">
+                                    <label>饥饿度</label>
+                                    <div class="bar-container">
+                                        <div class="bar-fill hunger-bar" id="hungerBar"></div>
+                                    </div>
+                                    <span id="hungerValue">100%</span>
+                                </div>
+                                <div class="stat-bar">
+                                    <label>快乐度</label>
+                                    <div class="bar-container">
+                                        <div class="bar-fill happiness-bar" id="happinessBar"></div>
+                                    </div>
+                                    <span id="happinessValue">100%</span>
+                                </div>
+                                <div class="stat-bar">
+                                    <label>健康度</label>
+                                    <div class="bar-container">
+                                        <div class="bar-fill health-bar" id="healthBar"></div>
+                                    </div>
+                                    <span id="healthValue">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pet-actions">
+                        <div class="action-group">
+                            <h3>喂养</h3>
+                            <div class="food-items">
+                                <div class="food-item" data-food="basic" data-cost="5">
+                                    <div class="food-icon">
+                                        <i class="fas fa-fish"></i>
+                                    </div>
+                                    <div class="food-info">
+                                        <h4>小鱼干</h4>
+                                        <p>基础食物</p>
+                                        <span class="food-cost">5 代币</span>
+                                    </div>
+                                    <button class="feed-btn" data-food="basic">喂养</button>
+                                </div>
+                                <div class="food-item" data-food="premium" data-cost="15">
+                                    <div class="food-icon">
+                                        <i class="fas fa-drumstick-bite"></i>
+                                    </div>
+                                    <div class="food-info">
+                                        <h4>高级猫粮</h4>
+                                        <p>营养丰富</p>
+                                        <span class="food-cost">15 代币</span>
+                                    </div>
+                                    <button class="feed-btn" data-food="premium">喂养</button>
+                                </div>
+                                <div class="food-item" data-food="luxury" data-cost="30">
+                                    <div class="food-icon">
+                                        <i class="fas fa-crown"></i>
+                                    </div>
+                                    <div class="food-info">
+                                        <h4>豪华大餐</h4>
+                                        <p>顶级享受</p>
+                                        <span class="food-cost">30 代币</span>
+                                    </div>
+                                    <button class="feed-btn" data-food="luxury">喂养</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-group">
+                            <h3>互动</h3>
+                            <div class="interaction-items">
+                                <div class="interaction-item" data-action="play" data-cost="10">
+                                    <div class="interaction-icon">
+                                        <i class="fas fa-gamepad"></i>
+                                    </div>
+                                    <div class="interaction-info">
+                                        <h4>玩耍</h4>
+                                        <p>增加快乐度</p>
+                                        <span class="interaction-cost">10 代币</span>
+                                    </div>
+                                    <button class="interact-btn" data-action="play">玩耍</button>
+                                </div>
+                                <div class="interaction-item" data-action="groom" data-cost="8">
+                                    <div class="interaction-icon">
+                                        <i class="fas fa-spa"></i>
+                                    </div>
+                                    <div class="interaction-info">
+                                        <h4>梳毛</h4>
+                                        <p>增加健康度</p>
+                                        <span class="interaction-cost">8 代币</span>
+                                    </div>
+                                    <button class="interact-btn" data-action="groom">梳毛</button>
+                                </div>
+                                <div class="interaction-item" data-action="medicine" data-cost="20">
+                                    <div class="interaction-icon">
+                                        <i class="fas fa-pills"></i>
+                                    </div>
+                                    <div class="interaction-info">
+                                        <h4>治疗</h4>
+                                        <p>恢复健康</p>
+                                        <span class="interaction-cost">20 代币</span>
+                                    </div>
+                                    <button class="interact-btn" data-action="medicine">治疗</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pet-log">
+                        <h3>宠物日志</h3>
+                        <div class="log-container" id="petLog">
+                            <!-- 宠物日志将在这里显示 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 进度报告部分 -->
+        <section id="progress" class="section">
+            <div class="container">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <h1>进度报告</h1>
+                        <p>查看你的专注力训练进展</p>
+                    </div>
+
+                    <div class="progress-overview">
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="overview-content">
+                                <h3>今日专注时间</h3>
+                                <div class="overview-value" id="todayFocusTime">0分钟</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="overview-content">
+                                <h3>连续天数</h3>
+                                <div class="overview-value" id="currentStreakOverview">0天</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="overview-content">
+                                <h3>完成的任务</h3>
+                                <div class="overview-value" id="completedTasksOverview">0个</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="overview-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="overview-content">
+                                <h3>专注力评分</h3>
+                                <div class="overview-value" id="focusScore">0分</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-charts">
+                        <div class="chart-container">
+                            <h3>专注时间趋势</h3>
+                            <canvas id="focusTimeChart"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>任务完成情况</h3>
+                            <canvas id="taskCompletionChart"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>游戏训练记录</h3>
+                            <canvas id="gameProgressChart"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>冥想练习记录</h3>
+                            <canvas id="meditationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="progress-insights">
+                        <h3>智能洞察</h3>
+                        <div class="insights-list" id="insightsList">
+                            <!-- 洞察内容将动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 设置面板 -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2>设置</h2>
+                <button class="close-settings-btn" id="closeSettingsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-group">
+                    <label>主题</label>
+                    <select id="themeSelect">
+                        <option value="light">浅色主题</option>
+                        <option value="dark">深色主题</option>
+                        <option value="auto">跟随系统</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>通知设置</label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="timerNotifications" checked>
+                            番茄计时器通知
+                        </label>
+                        <label>
+                            <input type="checkbox" id="taskReminders" checked>
+                            任务提醒
+                        </label>
+                        <label>
+                            <input type="checkbox" id="breakReminders" checked>
+                            休息提醒
+                        </label>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>声音设置</label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="timerSounds" checked>
+                            计时器声音
+                        </label>
+                        <label>
+                            <input type="checkbox" id="backgroundMusic" checked>
+                            背景音乐
+                        </label>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>无障碍设置</label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="highContrast">
+                            高对比度模式
+                        </label>
+                        <label>
+                            <input type="checkbox" id="largeText">
+                            大字体模式
+                        </label>
+                        <label>
+                            <input type="checkbox" id="screenReader">
+                            屏幕阅读器支持
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知区域 -->
+    <div class="notifications" id="notifications"></div>
+
+    <!-- 加载脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
