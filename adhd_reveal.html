@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>ADHD — 专注力训练助手｜ETHShanghai Hackathon</title>
+  <!-- Reveal.js core from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5/dist/reveal.css" />
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5/dist/theme/white.css" id="theme" />
+  <style>
+    :root{
+      --brand:#3BA7A0;      /* 清新蓝绿 */
+      --accent:#FF6B6B;     /* 番茄红 */
+      --soft:#FFE3A3;       /* 浅杏 */
+      --ink:#445566;        /* 深灰蓝 */
+    }
+    .reveal{ font-family: Inter, Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; color: var(--ink); }
+    .reveal h1, .reveal h2, .reveal h3{ color: var(--brand); font-weight: 800; }
+    .reveal .slides section{ backdrop-filter: none; }
+    .tag{ display:inline-block; padding:.2em .6em; border-radius:999px; background:var(--soft); color:#333; font-size:.6em; margin-left:.3em; vertical-align: middle; }
+    .pill{ display:inline-block; padding:.35em .8em; border-radius:999px; background:var(--brand); color:#fff; font-weight:700; }
+    .accent{ color: var(--accent); }
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items:center; }
+    .grid-3{ display:grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .card{ border:1.5px solid #e8eef2; border-radius:16px; padding:16px; }
+    .kpi{ text-align:center; padding:14px 10px; border-radius:12px; background:#f8fbfb; border:1px dashed #dbeaea; }
+    .btn{ display:inline-block; padding:.55em 1.1em; background:var(--accent); color:#fff; border-radius:12px; text-decoration:none; font-weight:700; }
+    .muted{ opacity:.8; }
+    .svgwrap{ display:flex; gap:24px; align-items:center; justify-content:center; flex-wrap:wrap; }
+    .svgwrap svg{ width:88px; height:88px; }
+    /* Mermaid in Reveal: slightly larger by default */
+    .mermaid{ 
+      font-size: 1.1em;
+      padding: 25px;
+      min-height: 350px;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 封面 -->
+      <section data-auto-animate>
+        <h1>ADHD — 专注力训练助手</h1>
+        <p class="muted">ADHD × 时间管理 × <span class="accent">即时奖励</span></p>
+        <p>
+          <span class="pill">ETHShanghai 2025</span>
+          <span class="tag">AI × ETH</span>
+          <span class="tag">公共物品</span>
+        </p>
+        <div class="svgwrap" style="margin-top:24px">
+          <!-- tomato -->
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="g" cx="50%" cy="45%" r="60%"><stop offset="0%" stop-color="#FF7F7F"/><stop offset="100%" stop-color="#FF6B6B"/></radialGradient></defs><circle cx="64" cy="72" r="44" fill="url(#g)"/><path d="M64 20c8 6 12 10 14 16-9-3-18-3-28 0 2-6 6-10 14-16z" fill="#3BA7A0"/><path d="M64 20c-5 7-10 12-18 15 4-9 11-14 18-15z" fill="#2C7E78"/></svg>
+          <!-- coin -->
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><circle cx="64" cy="64" r="44" fill="#FFE3A3" stroke="#E0C36A" stroke-width="6"/><circle cx="64" cy="64" r="28" fill="#FFD777" stroke="#E0C36A" stroke-width="4"/><text x="64" y="70" font-size="28" text-anchor="middle" fill="#445566" font-family="Inter,Arial">D</text></svg>
+          <!-- paw -->
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><circle cx="42" cy="44" r="12" fill="#3BA7A0"/><circle cx="86" cy="44" r="12" fill="#3BA7A0"/><circle cx="32" cy="72" r="12" fill="#3BA7A0"/><circle cx="96" cy="72" r="12" fill="#3BA7A0"/><path d="M64 64c-18 0-34 10-34 22s16 18 34 18 34-6 34-18-16-22-34-22z" fill="#2C7E78"/></svg>
+        </div>
+        <aside class="notes">3 分钟口播：30s 痛点 & 解决方案，90s Demo，30s 技术亮点，30s Roadmap。</aside>
+      </section>
+
+      <!-- 痛点 -->
+      <section>
+        <h2>问题 · Pain Points</h2>
+        <div class="grid-2">
+          <div>
+            <ul>
+              <li>启动困难 / 行动迟缓</li>
+              <li>易分心，缺乏即时反馈</li>
+              <li>难以形成长期习惯</li>
+              <li>传统工具缺少<strong>正向激励</strong></li>
+            </ul>
+            <p class="muted">目标用户：需要 <strong>低干扰、可视化、可持续奖励</strong> 的专注辅助。</p>
+          </div>
+          <div>
+            <pre class="mermaid">
+pie title ADHD 用户核心痛点（定性占比）
+  "启动困难 / 行动迟缓" : 35
+  "易分心 / 环境干扰" : 30
+  "缺乏即时反馈" : 20
+  "难以形成长期习惯" : 15
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 解决方案 -->
+      <section>
+        <h2>解决方案 · DHD</h2>
+        <div class="grid-2">
+          <div>
+            <ul>
+              <li><strong>番茄计时</strong> + 任务管理</li>
+              <li>专注训练小游戏 & 冥想练习</li>
+              <li><span class="accent">即时奖励</span>：完成一次 → 领取代币</li>
+              <li>虚拟宠物：可见成长 → 提升启动意愿</li>
+            </ul>
+          </div>
+          <div>
+            <pre class="mermaid">
+flowchart LR
+  A[用户进入 ADHD] --> B[番茄/训练/冥想]
+  B --> C{完成一次专注?}
+  C -- 是 --> D[即时反馈弹窗]
+  D --> E[签名或领取 DHD 代币]
+  E --> F[虚拟宠物：喂食/升级]
+  F --> G[仪表盘：连击/趋势]
+  C -- 否 --> B
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 核心功能 -->
+      <section>
+        <h2>核心功能 · Core</h2>
+        <div class="grid-3">
+          <div class="card"><strong>🍅 番茄计时</strong><br/>自定义时长 / 弱提醒</div>
+          <div class="card"><strong>📋 任务管理</strong><br/>优先级 / 完成统计</div>
+          <div class="card"><strong>🎮 训练小游戏</strong><br/>呼吸 / 视觉 / 记忆</div>
+          <div class="card"><strong>🧘 冥想练习</strong><br/>正念 / 身体扫描</div>
+          <div class="card"><strong>🔗 领取奖励</strong><br/>前端签名 / 事件监听</div>
+          <div class="card"><strong>🐾 虚拟宠物</strong><br/>喂养 / 升级 / 皮肤</div>
+        </div>
+      </section>
+
+      <!-- Demo 时序图 -->
+      <section>
+        <h2>Demo · 交互时序</h2>
+        <pre class="mermaid">
+sequenceDiagram
+  participant U as 用户
+  participant APP as DHD WebApp
+  participant WAL as 钱包/签名
+  participant TOK as 奖励合约
+  U->>APP: 启动番茄 & 专注
+  APP-->>U: 计时 & 微交互反馈
+  U->>APP: 完成 → 点击领取奖励
+  APP->>WAL: 发起签名/交易请求
+  WAL-->>APP: 返回签名/交易哈希
+  APP->>TOK: 调用 reward() 记录 & 发币
+  TOK-->>APP: 交易成功（事件）
+  APP-->>U: 代币到账 & 宠物升级动画
+        </pre>
+      </section>
+
+      <!-- 架构图 -->
+      <section>
+        <h2>系统架构 · Minimal Viable</h2>
+        <pre class="mermaid">
+flowchart TB
+  subgraph Frontend
+    FE[React/Tailwind]
+    LS[(localStorage/IndexedDB)]
+  end
+  subgraph On-Chain
+    ERC20[(DHD Token)]
+    RWD[[Rewarder 合约]]
+  end
+  subgraph Backend (可选)
+    API[[轻量 API: 排行/课程]]
+  end
+  FE <--> LS
+  FE --> RWD
+  RWD --> ERC20
+  FE --> API
+        </pre>
+      </section>
+
+      <!-- Tokenomics / 状态机 -->
+      <section>
+        <h2>奖励闭环 · Tokenomics</h2>
+        <pre class="mermaid">
+stateDiagram-v2
+  [*] --> 待机
+  待机 --> 专注中: 启动番茄/训练
+  专注中 --> 完成: 计时结束/任务完成
+  完成 --> 奖励: 领取代币/经验
+  奖励 --> 消费: 宠物喂养/升级
+  消费 --> 待机: 可见成长 → 更易再次启动
+        </pre>
+      </section>
+
+      <!-- 合约关系 -->
+      <section>
+        <h2>合约关系 · Contracts</h2>
+        <pre class="mermaid">
+classDiagram
+  class DHDToken {
+    +name: string
+    +symbol: string
+    +decimals: uint8
+    +mint(to, amount)
+  }
+  class Rewarder {
+    +reward(address user, uint256 score)
+    -owner: address
+    -token: DHDToken
+    -cooldown: mapping(address=>uint256)
+  }
+  DHDToken <.. Rewarder : uses
+        </pre>
+      </section>
+
+      <!-- Roadmap 甘特图 -->
+      <section>
+        <h2>Roadmap · 6 Weeks</h2>
+        <pre class="mermaid">
+gantt
+  title 路线图（Hackathon 后 6 周）
+  dateFormat  YYYY-MM-DD
+  section 产品
+  MVP 打磨(可用性): active, 2025-10-22, 14d
+  训练小游戏扩展: 2025-11-05, 14d
+  宠物系统深度化: 2025-11-12, 14d
+  section 区块链
+  前端签名/速记账: 2025-10-22, 7d
+  合约轻审/改进: 2025-11-01, 7d
+  排行榜与赛季制: 2025-11-08, 14d
+        </pre>
+      </section>
+
+      <!-- 可视化面板 -->
+      <section>
+        <h2>数据面板 · 可视化</h2>
+        <div class="grid-2">
+          <pre class="mermaid">
+pie title 一周专注来源占比
+  番茄计时 : 55
+  训练小游戏 : 25
+  冥想练习 : 20
+          </pre>
+          <pre class="mermaid">
+flowchart LR
+  A[连续3天达成]-->B[+10% 额外奖励]
+  B-->C[解锁主题皮肤]
+  C-->D[增强启动意愿]
+          </pre>
+        </div>
+      </section>
+
+      <!-- 安全与反滥用 -->
+      <section>
+        <h2>安全 · 反滥用</h2>
+        <pre class="mermaid">
+flowchart TB
+  Start([Start]) --> S1[本地计时/反切屏提示]
+  S1 --> S2{完成时提交 Proof}
+  S2 -- 签名/防重放 --> S3[后端(可选)校验]
+  S3 --> S4[Rewarder 合约: 冷却+限额]
+  S4 --> End([End])
+        </pre>
+        <div class="kpi">最小可信：<strong>前端签名 + 事件监听</strong>，必要时引入 <em>server attest / 零知识扩展</em></div>
+      </section>
+
+      <!-- 结束页 -->
+      <section>
+        <h2>谢谢！</h2>
+        <p class="muted">「专注是一种能力，奖励是一种动力」</p>
+        <p>GitHub：<code>zhangsir-Ultra-MAX/ETH-Hackathon-adhd</code></p>
+        <a class="btn" href="#/0">回到封面</a>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal core JS -->
+  <script src="https://unpkg.com/reveal.js@5/dist/reveal.js"></script>
+  <!-- Plugins -->
+  <script src="https://unpkg.com/reveal.js@5/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5/plugin/highlight/highlight.js"></script>
+  <!-- Mermaid + Reveal plugin -->
+  <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://unpkg.com/reveal.js-mermaid-plugin@2/plugin/mermaid/mermaid.js"></script>
+
+  <script>
+    // Mermaid init (light theme tuned to brand)
+    mermaid.initialize({ 
+      startOnLoad: false, 
+      theme: 'base',
+      fontSize: 16,
+      fontFamily: 'Inter, Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      themeVariables: {
+        primaryColor: '#E8F5F3',
+        primaryTextColor: '#2c3e50',
+        primaryBorderColor: '#3BA7A0',
+        lineColor: '#3BA7A0',
+        secondaryColor: '#FFE3A3',
+        tertiaryColor: '#FF6B6B',
+        fontSize: '16px'
+      },
+      // Flowchart 配置
+      flowchart: {
+        nodeSpacing: 60,
+        rankSpacing: 80,
+        padding: 20,
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
+      },
+      // 序列图配置
+      sequence: {
+        actorMargin: 100,
+        boxMargin: 15,
+        boxTextMargin: 8,
+        noteMargin: 15,
+        messageMargin: 50,
+        mirrorActors: true,
+        useMaxWidth: true
+      },
+      // 状态图配置
+      state: {
+        padding: 15,
+        dividerMargin: 15,
+        sizeUnit: 8,
+        useMaxWidth: true
+      },
+      // 甘特图配置
+      gantt: {
+        titleTopMargin: 25,
+        barHeight: 30,
+        barGap: 8,
+        topPadding: 75,
+        leftPadding: 120,
+        gridLineStartPadding: 40,
+        fontSize: 14,
+        sectionFontSize: 14,
+        numberSectionStyles: 4,
+        useMaxWidth: true
+      },
+      // 类图配置
+      class: {
+        padding: 15,
+        useMaxWidth: true
+      },
+      // 饼图配置
+      pie: {
+        textPosition: 0.65,
+        useMaxWidth: true
+      }
+    });
+
+    const deck = new Reveal({
+      hash: true,
+      slideNumber: true,
+      plugins: [ RevealNotes, RevealSearch, RevealZoom, RevealHighlight, RevealMermaid ]
+    });
+    deck.initialize();
+  </script>
+</body>
+</html>
